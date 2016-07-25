@@ -8,8 +8,14 @@
 
     <body>
     <script type="text/javascript" src="assets/js/index.js"></script>
-    <div id="packs">Packs!</div>
-    <div id="collection">Collection!<ul></div>
+	<div id="selectSet"></div><br>
+	<input type="radio" class="numPacks" name="numPacks" value=2 checked> 2 |
+	<input type="radio" class="numPacks" name="numPacks" value=7> 7 |
+	<input type="radio" class="numPacks" name="numPacks" value=15> 15 |
+	<input type="radio" class="numPacks" name="numPacks" value=40> 40 |
+	<input type="radio" class="numPacks" name="numPacks" value=60> 60 <br><br>
+	<button type="button" id="buyPacks" onclick="buyPacks()">Buy Packs</button><br><br>
+	<div id="collection"></div>
     </body>
 
 </html>
