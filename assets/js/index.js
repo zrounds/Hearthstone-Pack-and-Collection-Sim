@@ -1,10 +1,10 @@
-﻿$(document).ready(function(){
-	$('#packs').html('Packs! <br>');
-	$('#collection').html('Collection! <br><br><ul>');
+﻿var cards = [];
+
+$(document).ready(function(){
 	$.getJSON( "https://api.hearthstonejson.com/v1/latest/enUS/cards.collectible.json", function( data ) {
-		var items = [];
+		
 		$.each( data, function( i ) {
-			items.push( "<li id='" + data[i]["id"] + "'>" + data[i]["id"] + "</li>" );
+			items.push( "<li id='" + data[i]["id"] + "'>" + data[i]["name"] + "</li>" );
 		});
 		
 		$( "<ul/>", {
