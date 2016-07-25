@@ -1,4 +1,4 @@
 ﻿$(document).ready(function(){
-	$('#cards').html('Cards! <br>');
+	$('#packs').html('Packs! <br>');
 	$('#collection').html('Collection!');
-}
+});
