@@ -19,7 +19,10 @@ $(document).ready(function(){
         type: "GET",
 		async: false,
         success: function (data, xhr, status) {
-			cards = data.slice();
+			//cards = data.slice();
+			$.each(data, function(i){
+				cards[data[i]["id"]] = data[i];
+			});
         }
     });
 	//Defunct - I decided to hard-code the sets because the API does not put a distinction b/w adventures and expansions and I need the distinction 
@@ -32,9 +35,10 @@ $(document).ready(function(){
 		$("#selectSet").append("<input type = 'radio' class = 'sets' name = 'sets' id = '" + sets[i] + "' value = '" + sets[i] + "'> " + setNames[sets[i]] +  ((i < sets.length - 1) ? " | " : ""));
 	});
 	$("#"+sets[0]).prop("checked", true);
-	$.each(cards, function(i){
-		collection[cards[i]["id"]] = 0; 
-	});
+	for (var key in cards){
+		collection[key] = 0; 
+	};
+	
 });
 
 function buyPacks(){
@@ -43,8 +47,14 @@ function buyPacks(){
 	var selectedSet = cards.filter(isCurrentlySelectedSet);
 	console.log(getRandomArbitrary(0,100));
 	
+	//Dump collection
+	$("#collection").html("");
+	for (var key in collection) {
+		if (collection[key] > 0) $("#collection").append(cards[key]["name"] + ": " + collection[key] + "<br>");
+	};
 	
-	$("#collection").append("You bought " + $(".numPacks:checked").val() + " packs from the " + setNames[$(".sets:checked").val()] + " set.<br>");
+	$("#message").html("You bought " + $(".numPacks:checked").val() + " packs from the " + setNames[$(".sets:checked").val()] + " set.<br>");
+	$("#history").append("You bought " + $(".numPacks:checked").val() + " packs from the " + setNames[$(".sets:checked").val()] + " set.<br>");
 }
 
 function isCurrentlySelectedSet(value){
@@ -52,7 +62,7 @@ function isCurrentlySelectedSet(value){
 }
 
 function isGreaterThanZero(value){
-	return value > 0; 
+	return collection[value] > 0; 
 }
 
 function getRandomArbitrary(min, max) {
