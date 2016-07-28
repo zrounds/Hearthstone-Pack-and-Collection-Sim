@@ -11,6 +11,7 @@ var setNames = {"EXPERT1":"Classic",
 				"LOE":"League of Explorers",
 				"BRM":"Black Rock Mountain",
 				"NAXX":"Curse of Naxxramus"}
+var cBound = 70.36, gcBound = 71.84, rBound = 93.44, grBound = 94.71, eBound = 98.79, geBound = 98.98, lBound = 99.92
 
 $(document).ready(function(){
 	
@@ -74,38 +75,38 @@ function buyPacks(){
 	for (var i = 0; i < $(".numPacks:checked").val(); i++){
 		var rarities = [];
 		for (var j=0; j<4; j++) rarities.push(getRandomArbitrary(0,100));
-		if(rarities[0] <= 71.84 && rarities[1] <= 71.84 && rarities[2] <= 71.84 && rarities[3] <= 71.84){
-			rarities.push(getRandomArbitrary(71.8401,100));
+		if(rarities[0] <= gcBound && rarities[1] <= gcBound && rarities[2] <= gcBound && rarities[3] <= gcBound){
+			rarities.push(getRandomArbitrary(gcBound + 0.0001,100));
 		} else {
 			rarities.push(getRandomArbitrary(0,100));
-		}
+		} 
 		//Distribute random cards based on rarity
 		$.each(rarities, function(i){
-			if(rarities[i] <= 70.36){
+			if(rarities[i] <= cBound){
 				//Common
 				var chosenCard = commonCards[getRandomInt(0,commonCards.length)]["id"];
 				collection[chosenCard]["normal"] = collection[chosenCard]["normal"] + 1;
-			}else if (rarities[i] > 70.36 && rarities[i] <= 71.84){
+			}else if (rarities[i] > cBound && rarities[i] <= gcBound){
 				//Golden Common
 				var chosenCard = commonCards[getRandomInt(0,commonCards.length)]["id"];
 				collection[chosenCard]["golden"] = collection[chosenCard]["golden"] + 1;
-			} else if (rarities[i] > 71.84 && rarities[i] <= 93.44){
+			} else if (rarities[i] > gcBound && rarities[i] <= rBound){
 				//Rare
 				var chosenCard = rareCards[getRandomInt(0,rareCards.length)]["id"];
 				collection[chosenCard]["normal"] = collection[chosenCard]["normal"] + 1;
-			} else if (rarities[i] > 93.44 && rarities[i] <= 94.71){
+			} else if (rarities[i] > rBound && rarities[i] <= grBound){
 				//Golden Rare
 				var chosenCard = rareCards[getRandomInt(0,rareCards.length)]["id"];
 				collection[chosenCard]["golden"] = collection[chosenCard]["golden"] + 1;
-			} else if (rarities[i] > 94.71 && rarities[i] <= 98.79){
+			} else if (rarities[i] > grBound && rarities[i] <= eBound){
 				//Epic
 				var chosenCard = epicCards[getRandomInt(0,epicCards.length)]["id"];
 				collection[chosenCard]["normal"] = collection[chosenCard]["normal"] + 1;
-			} else if (rarities[i] > 98.79 && rarities[i] <= 98.98){
+			} else if (rarities[i] > eBound && rarities[i] <= geBound){
 				//Golden Epic
 				var chosenCard = epicCards[getRandomInt(0,epicCards.length)]["id"];
 				collection[chosenCard]["golden"] = collection[chosenCard]["golden"] + 1;
-			} else if (rarities[i] > 98.98 && rarities[i] <= 99.92){
+			} else if (rarities[i] > geBound && rarities[i] <= lBound){
 				//Legendary
 				var chosenCard = legendaryCards[getRandomInt(0,legendaryCards.length)]["id"];
 				collection[chosenCard]["normal"] = collection[chosenCard]["normal"] + 1;
@@ -130,33 +131,33 @@ function buyPacks(){
 
 function validationTest(){
 	//TESTING IF I GENERATE THE EXPECTED PERCENTAGES 
-	for (var i = 0; i<50000; i ++){
+	for (var i = 0; i<50; i ++){
 		buyPacks();
 		console.log(i);
 	}
-	
+	console.log(collection);
 	var c = 0, r = 0, e = 0, l = 0, gc = 0, gr = 0, ge = 0, gl = 0, totalCards = 0;
 	for (var key in collection){
 		switch (cards[key]["rarity"]){
 			case "COMMON":
-				c += collection["key"]["normal"];
-				gc += collection["key"]["golden"];
+				c += collection[key]["normal"];
+				gc += collection[key]["golden"];
 				break;
 			case "RARE":
-				r += collection["key"]["normal"];
-				gr += collection["key"]["golden"];
+				r += collection[key]["normal"];
+				gr += collection[key]["golden"];
 				break;
 			case "EPIC":
-				e += collection["key"]["normal"];
-				ge += collection["key"]["golden"];
+				e += collection[key]["normal"];
+				ge += collection[key]["golden"];
 				break;
 			case "LEGENDARY":
-				l += collection["key"]["normal"];
-				gl += collection["key"]["golden"];
+				l += collection[key]["normal"];
+				gl += collection[key]["golden"];
 				break;
 		}
-		totalCards += collection["key"]["normal"];
-		totalCards += collection["key"]["golden"];
+		totalCards += collection[key]["normal"];
+		totalCards += collection[key]["golden"];
 	}
 	console.log("Total Cards in Collection: " + totalCards);
 	console.log("Common: " + c);
