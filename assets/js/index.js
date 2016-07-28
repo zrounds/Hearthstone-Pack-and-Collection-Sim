@@ -11,8 +11,8 @@ var setNames = {"EXPERT1":"Classic",
 				"LOE":"League of Explorers",
 				"BRM":"Black Rock Mountain",
 				"NAXX":"Curse of Naxxramus"}
-var cBound = 70.36, gcBound = 71.84, rBound = 93.44, grBound = 94.71, eBound = 98.79, geBound = 98.98, lBound = 99.92
-
+//var cBound = 70.36, gcBound = 71.84, rBound = 93.44, grBound = 94.71, eBound = 98.79, geBound = 98.98, lBound = 99.92
+var cBound = 76.25, gcBound = 77.75, rBound = 94.75, grBound = 95.75, eBound = 99, geBound = 99.16, lBound = 99.925
 $(document).ready(function(){
 	
 	$.ajax({
@@ -131,7 +131,7 @@ function buyPacks(){
 
 function validationTest(){
 	//TESTING IF I GENERATE THE EXPECTED PERCENTAGES 
-	for (var i = 0; i<50; i ++){
+	for (var i = 0; i<500; i ++){
 		buyPacks();
 		console.log(i);
 	}
