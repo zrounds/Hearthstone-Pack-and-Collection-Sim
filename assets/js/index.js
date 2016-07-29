@@ -13,6 +13,14 @@ var setNames = {"EXPERT1":"Classic",
 				"NAXX":"Curse of Naxxramus"}
 //var cBound = 70.36, gcBound = 71.84, rBound = 93.44, grBound = 94.71, eBound = 98.79, geBound = 98.98, lBound = 99.92
 var cBound = 76.25, gcBound = 77.75, rBound = 94.75, grBound = 95.75, eBound = 99, geBound = 99.16, lBound = 99.925
+var pityTimers = {
+	"epic":[0,10],
+	"legendary":[0,40],
+	"goldenCommon":[0,25],
+	"goldenRare":[0,29],
+	"goldenEpic":[0,137],
+	"goldenLegendary":[0,310]
+};
 $(document).ready(function(){
 	
 	$.ajax({
@@ -64,10 +72,6 @@ function buyPacks(){
 			}
 		}
 	}
-	//console.clear();
-	//console.log(commonCards.length);
-	
-	
 	
 	//Determine rarity of 1-4
 	//If none are better than common, restrict last card to rare or better 
@@ -80,7 +84,62 @@ function buyPacks(){
 		} else {
 			rarities.push(getRandomArbitrary(0,100));
 		} 
-		//Distribute random cards based on rarity
+	
+	//Check pity timers 
+	var takingPity = [];
+	for (var key in pityTimers){
+		if (pityTimers[key][0] >= pityTimers[key][1]) {
+			//console.log("Pity needed for a " + key + " card. Number of packs since last opened: " + pityTimers[key][0]);
+			takingPity.push(key);
+		} 
+	}	
+	
+	//Take pity!
+	if(takingPity.length > 0) {
+		var numCommons = 0;
+		$.each(rarities, function(i){
+			if (rarities[i] <= cBound){
+				numCommons += 1;
+			}
+		});
+		if (takingPity.length > numCommons) {
+			console.log("TAKING PITY IS LENGTH " + takingPity.length + " and there are only " + numCommons +  " commons! THIS COULD BE AN ISSUE...");
+			console.log(rarities);
+		}
+	}
+	$.each(takingPity, function(i){
+		var lowestRarity = minimumValueIndex(rarities);
+		switch(takingPity[i]){
+			case "epic":
+				rarities[lowestRarity] = eBound;
+				pityTimers["epic"][0] = 0;
+				break;
+			case "legendary":
+				rarities[lowestRarity] = lBound;
+				pityTimers["legendary"][0] = 0;
+				break;
+			case "goldenCommon":
+				rarities[lowestRarity] = gcBound;
+				pityTimers["goldenCommon"][0] = 0;
+				break;
+			case "goldenRare":
+				rarities[lowestRarity] = grBound;
+				pityTimers["goldenRare"][0] = 0;
+				break;
+			case "goldenEpic":
+				rarities[lowestRarity] = geBound;
+				pityTimers["goldenEpic"][0] = 0;
+				break;
+			case "goldenLegendary":
+				rarities[lowestRarity] = 99.99;
+				pityTimers["goldenLegendary"][0] = 0;
+				break;
+		}
+		//console.log(rarities[lowestRarity]);
+	});
+	
+	//Distribute random cards based on rarity
+	var raritiesOpened = {"epic":false,"legendary":false,"goldenCommon":false,"goldenRare":false,"goldenEpic":false,"goldenLegendary":false}; //To increment or zero pity timers
 		$.each(rarities, function(i){
 			if(rarities[i] <= cBound){
 				//Common
@@ -90,6 +149,7 @@ function buyPacks(){
 				//Golden Common
 				var chosenCard = commonCards[getRandomInt(0,commonCards.length)]["id"];
 				collection[chosenCard]["golden"] = collection[chosenCard]["golden"] + 1;
+				raritiesOpened["goldenCommon"] = true;
 			} else if (rarities[i] > gcBound && rarities[i] <= rBound){
 				//Rare
 				var chosenCard = rareCards[getRandomInt(0,rareCards.length)]["id"];
@@ -98,24 +158,32 @@ function buyPacks(){
 				//Golden Rare
 				var chosenCard = rareCards[getRandomInt(0,rareCards.length)]["id"];
 				collection[chosenCard]["golden"] = collection[chosenCard]["golden"] + 1;
+				raritiesOpened["goldenRare"] = true;
 			} else if (rarities[i] > grBound && rarities[i] <= eBound){
 				//Epic
 				var chosenCard = epicCards[getRandomInt(0,epicCards.length)]["id"];
 				collection[chosenCard]["normal"] = collection[chosenCard]["normal"] + 1;
+				raritiesOpened["epic"] = true;
 			} else if (rarities[i] > eBound && rarities[i] <= geBound){
 				//Golden Epic
 				var chosenCard = epicCards[getRandomInt(0,epicCards.length)]["id"];
 				collection[chosenCard]["golden"] = collection[chosenCard]["golden"] + 1;
+				raritiesOpened["goldenEpic"] = true;
 			} else if (rarities[i] > geBound && rarities[i] <= lBound){
 				//Legendary
 				var chosenCard = legendaryCards[getRandomInt(0,legendaryCards.length)]["id"];
 				collection[chosenCard]["normal"] = collection[chosenCard]["normal"] + 1;
+				raritiesOpened["legendary"] = true;
 			} else {
 				//Golden Legendary (>99.92 && <= 100, but no reason to actually test this)
 				var chosenCard = legendaryCards[getRandomInt(0,legendaryCards.length)]["id"];
 				collection[chosenCard]["golden"] = collection[chosenCard]["golden"] + 1;
+				raritiesOpened["goldenLegendary"] = true;
 			}
 		});
+		for (var key in raritiesOpened){
+			pityTimers[key][0] = (raritiesOpened[key]) ? 0 : pityTimers[key][0] + 1;
+		}
 	}
 	
 	//Dump collection
@@ -126,14 +194,14 @@ function buyPacks(){
 	};
 	
 	$("#history").prepend($("#message").html());
-	$("#message").html("You bought " + $(".numPacks:checked").val() + " packs from the " + setNames[$(".sets:checked").val()] + " set.<br>");
+	$("#message").html("You bought " + $(".numPacks:checked").val() + " packs from the " + setNames[$(".sets:checked").val()] + " set.<br><br>");
 }
 
 function validationTest(){
 	//TESTING IF I GENERATE THE EXPECTED PERCENTAGES 
 	for (var i = 0; i<500; i ++){
 		buyPacks();
-		console.log(i);
+		//console.log(i);
 	}
 	console.log(collection);
 	var c = 0, r = 0, e = 0, l = 0, gc = 0, gr = 0, ge = 0, gl = 0, totalCards = 0;
@@ -210,4 +278,16 @@ function getRandomArbitrary(min, max) {
 //Inclusive of min, exclusive of max
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
+}
+
+//Minimum from array
+function minimumValueIndex(array){
+	var x = array[0], y = 0;
+	for (var i=0 ; i < array.length; i++){
+		if (x < array[i]){
+			x = array[i];
+			y = i;
+		} 
+	}
+	return y;
 }
