@@ -78,14 +78,6 @@ function buyPacks(){
 	//If none are better than common, restrict last card to rare or better 
 	//Determine final rarity 
 	for (var i = 0; i < $(".numPacks:checked").val(); i++){
-		var rarities = [];
-		for (var j=0; j<4; j++) rarities.push(getRandomArbitrary(0,100));
-		if(rarities[0] <= gcBound && rarities[1] <= gcBound && rarities[2] <= gcBound && rarities[3] <= gcBound){
-			rarities.push(getRandomArbitrary(gcBound + 0.0001,100));
-		} else {
-			rarities.push(getRandomArbitrary(0,100));
-		} 
-	
 	//Check pity timers 
 	var takingPity = [];
 	for (var key in pityTimers){
@@ -96,7 +88,7 @@ function buyPacks(){
 	}	
 	
 	//Take pity!
-	if(takingPity.length > 0) {
+	/*if(takingPity.length > 0) {
 		var numCommons = 0;
 		$.each(rarities, function(i){
 			if (rarities[i] <= cBound){
@@ -107,37 +99,51 @@ function buyPacks(){
 			console.log("TAKING PITY IS LENGTH " + takingPity.length + " and there are only " + numCommons +  " commons! THIS COULD BE AN ISSUE...");
 			console.log(rarities);
 		}
-	}
+	}*/
+	var j = 0;
+	var rarities = [];	
 	$.each(takingPity, function(i){
-		var lowestRarity = minimumValueIndex(rarities);
+		//var lowestRarity = minimumValueIndex(rarities);
 		switch(takingPity[i]){
 			case "epic":
-				rarities[lowestRarity] = eBound;
+				rarities.push(eBound);
 				pityTimers["epic"][0] = 0;
 				break;
 			case "legendary":
-				rarities[lowestRarity] = lBound;
+				rarities.push(lBound);
 				pityTimers["legendary"][0] = 0;
 				break;
 			case "goldenCommon":
-				rarities[lowestRarity] = gcBound;
+				rarities.push(gcBound)
 				pityTimers["goldenCommon"][0] = 0;
 				break;
 			case "goldenRare":
-				rarities[lowestRarity] = grBound;
+				rarities.push(grBound)
 				pityTimers["goldenRare"][0] = 0;
 				break;
 			case "goldenEpic":
-				rarities[lowestRarity] = geBound;
+				rarities.push(geBound)
 				pityTimers["goldenEpic"][0] = 0;
 				break;
 			case "goldenLegendary":
-				rarities[lowestRarity] = 99.99;
+				rarities.push(99.99);
 				pityTimers["goldenLegendary"][0] = 0;
 				break;
 		}
-		//console.log(rarities[lowestRarity]);
+		j++;
+		console.log("Took pity.");
 	});
+	
+	//Generate remaining rarities 
+	while (j<4) {
+		rarities.push(getRandomArbitrary(0,100));
+		j++;
+	}
+	if(rarities[0] <= gcBound && rarities[1] <= gcBound && rarities[2] <= gcBound && rarities[3] <= gcBound){
+		rarities.push(getRandomArbitrary(gcBound + 0.0001,100));
+	} else {
+		rarities.push(getRandomArbitrary(0,100));
+	} 
 	
 	//Distribute random cards based on rarity
 	var raritiesOpened = {"epic":false,"legendary":false,"goldenCommon":false,"goldenRare":false,"goldenEpic":false,"goldenLegendary":false}; //To increment or zero pity timers
