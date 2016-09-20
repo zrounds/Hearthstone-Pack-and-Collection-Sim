@@ -287,8 +287,8 @@ function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
-//Minimum from array
-function minimumValueIndex(array){
+//Minimum from array -- No longer needed after reworking of pity timer distribution algorithm
+/*function minimumValueIndex(array){
 	var x = array[0], y = 0;
 	for (var i=0 ; i < array.length; i++){
 		if (x < array[i]){
@@ -297,4 +297,4 @@ function minimumValueIndex(array){
 		} 
 	}
 	return y;
-}
+}*/
