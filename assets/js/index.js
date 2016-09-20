@@ -17,7 +17,7 @@ var cBound = 76.25, gcBound = 77.75, rBound = 94.75, grBound = 95.75, eBound = 9
 $(document).ready(function(){
 	
 	$.ajax({
-        url: "https://api.hearthstonejson.com/v1/latest/enUS/cards.collectible.json",
+        url: "https://api.hearthstonejson.com/v1/14406/enUS/cards.collectible.json",
         type: "GET",
 		async: false,
         success: function (data, xhr, status) {
