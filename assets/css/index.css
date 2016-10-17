@@ -1,3 +1,6 @@
 #history, #history-header{
 color: gray; 
 }
+#moneySpent-header, #collection-header, #history-header, #message-header{
+	font-weight: bold;
+}

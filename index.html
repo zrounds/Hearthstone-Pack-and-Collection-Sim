@@ -9,19 +9,20 @@
     <body>
     <script type="text/javascript" src="assets/js/index.js"></script>
 	<div id="selectSet"></div><br>
-	<input type="radio" class="numPacks" name="numPacks" value=2 checked> 2 |
-	<input type="radio" class="numPacks" name="numPacks" value=7> 7 |
-	<input type="radio" class="numPacks" name="numPacks" value=15> 15 |
-	<input type="radio" class="numPacks" name="numPacks" value=40> 40 |
-	<input type="radio" class="numPacks" name="numPacks" value=60> 60 <br><br>
+	<input type="radio" class="numPacks" name="numPacks" value=2 checked> 2 ($2.99) |
+	<input type="radio" class="numPacks" name="numPacks" value=7> 7 ($9.99) |
+	<input type="radio" class="numPacks" name="numPacks" value=15> 15 ($19.99) |
+	<input type="radio" class="numPacks" name="numPacks" value=40> 40 ($49.99) <br><br>
 	<button type="button" id="buyPacks" onclick="buyPacks()">Buy Packs</button><br><br>
 	<button type="button" id="validationTest" onclick="validationTest()">Run Validation Test!</button>
-	<div id ="message-header"><b>Last Action:<b><br><br></div>
+	<div id ="message-header">Last Action:<br><br></div>
 	<div id="message"></div>
-	<div id="collection-header"><b>Collection:</b><br><br></div>
+	<div id="moneySpent-header">Money Spent:</div>
+	<div id="moneySpent">$0.00</div><br>
+	<div id="collection-header">Collection:<br><br></div>
 	<div id="collection"></div>
 	<br><br>
-	<div id = "history-header"><b>History:</b><br></div>
+	<div id = "history-header">History:<br></div>
 	<div id="history"></div>
     </body>
 

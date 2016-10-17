@@ -1,5 +1,6 @@
 ﻿var cards = {};
 var collection = {};
+var moneySpent = 0.0;
 var sets = ["EXPERT1", "GVG", "TGT", "OG"];
 var setsToSkip = ["CORE","HERO_SKINS", "PROMO", "REWARD"]; 
 var adventureSets = ["KARA", "LOE", "BRM", "NAXX"];
@@ -72,6 +73,25 @@ function buyPacks(){
 					break;
 			}
 		}
+	}
+	
+	//Record Cost
+	switch($(".numPacks:checked").val()){
+		case "2":
+			moneySpent += 2.99;
+			break;
+		case "7": 
+			moneySpent += 9.99;
+			break;
+		case "15":
+			moneySpent += 19.99;
+			break;
+		case "40":
+			moneySpent += 49.99;
+			break;
+		default:
+			console.log("Illegal number of packs. Terminating buyPacks() function call.");
+			return;
 	}
 	
 	//Determine rarity of 1-4
@@ -193,7 +213,8 @@ function buyPacks(){
 		}
 	}
 	
-	//Dump collection
+	//Dump collection and show moneySpent
+	$("#moneySpent").html("$" + parseFloat(Math.round(moneySpent * 100) / 100).toFixed(2)); 
 	$("#collection").html("");
 	for (var key in collection) {
 		if (collection[key]["normal"] > 0) $("#collection").append(cards[key]["name"] + ": " + collection[key]["normal"] + "<br>");
