@@ -216,10 +216,52 @@ function buyPacks(){
 	//Dump collection and show moneySpent
 	$("#moneySpent").html("$" + parseFloat(Math.round(moneySpent * 100) / 100).toFixed(2)); 
 	$("#collection").html("");
+	var totalDust = 0, extraDust = 0;
 	for (var key in collection) {
-		if (collection[key]["normal"] > 0) $("#collection").append(cards[key]["name"] + ": " + collection[key]["normal"] + "<br>");
-		if (collection[key]["golden"] > 0) $("#collection").append(cards[key]["name"] + " (golden): " + collection[key]["golden"] + "<br>");
+		if (collection[key]["normal"] > 0){ 
+			$("#collection").append(cards[key]["name"] + ": " + collection[key]["normal"] + "<br>");
+			switch(cards[key]["rarity"]){
+				case "COMMON":
+					totalDust += collection[key]["normal"] * 5;
+					if (collection[key]["normal"] > 2) extraDust += (collection[key]["normal"] - 2) * 5;
+					break;
+				case "RARE":
+					totalDust += collection[key]["normal"] * 40;
+					if (collection[key]["normal"] > 2) extraDust += (collection[key]["normal"] - 2) * 40;
+					break;
+				case "EPIC":
+					totalDust += collection[key]["normal"] * 100;
+					if (collection[key]["normal"] > 2) extraDust += (collection[key]["normal"] - 2) * 100;
+					break;
+				case "LEGENDARY":
+					totalDust += collection[key]["normal"] * 400;
+					extraDust += (collection[key]["normal"] - 1) * 400;
+					break;
+			}
+		}
+		if (collection[key]["golden"] > 0) {
+			$("#collection").append(cards[key]["name"] + " (golden): " + collection[key]["golden"] + "<br>");
+			switch(cards[key]["rarity"]){
+				case "COMMON":
+					totalDust += collection[key]["golden"] * 40;
+					if (collection[key]["golden"] > 2) extraDust += (collection[key]["golden"] - 2) * 40;
+					break;
+				case "RARE":
+					totalDust += collection[key]["golden"] * 100;
+					if (collection[key]["golden"] > 2) extraDust += (collection[key]["golden"] - 2) * 100;
+					break;
+				case "EPIC":
+					totalDust += collection[key]["golden"] * 400;
+					if (collection[key]["golden"] > 2) extraDust += (collection[key]["golden"] - 2) * 400;
+					break;
+				case "LEGENDARY":
+					totalDust += collection[key]["golden"] * 1600;
+					extraDust += (collection[key]["golden"] - 1) * 1600;
+					break;
+			}
+		}
 	};
+	$("#dust").html("Total Dust: " + totalDust + "<br>Extra Dust: " + extraDust);
 	
 	$("#history").prepend($("#message").html());
 	$("#message").html("You bought " + $(".numPacks:checked").val() + " packs from the " + setNames[$(".sets:checked").val()] + " set.<br><br>");

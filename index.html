@@ -15,14 +15,16 @@
 	<input type="radio" class="numPacks" name="numPacks" value=40> 40 ($49.99) <br><br>
 	<button type="button" id="buyPacks" onclick="buyPacks()">Buy Packs</button><br><br>
 	<button type="button" id="validationTest" onclick="validationTest()">Run Validation Test!</button>
-	<div id ="message-header">Last Action:<br><br></div>
+	<div class="header">Last Action:<br><br></div>
 	<div id="message"></div>
-	<div id="moneySpent-header">Money Spent:</div>
+	<div class="header">Money Spent:</div>
 	<div id="moneySpent">$0.00</div><br>
-	<div id="collection-header">Collection:<br><br></div>
+	<div class="header">Dust Value of Collection:</div>
+	<div id="dust">Total Dust: 0 <br> Extra Dust: 0</div><br>
+	<div class="header">Collection:<br><br></div>
 	<div id="collection"></div>
 	<br><br>
-	<div id = "history-header">History:<br></div>
+	<div id="history-header" class="header">History:<br></div>
 	<div id="history"></div>
     </body>
 
