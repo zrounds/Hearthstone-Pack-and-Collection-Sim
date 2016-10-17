@@ -262,7 +262,7 @@ function buyPacks(){
 		}
 	};
 	$("#dust").html("Total Dust: " + totalDust + "<br>Extra Dust: " + extraDust);
-	
+	//$("completion").html(); --- Build the two different completion percentages after each buy, or rather smarter to update it 
 	$("#history").prepend($("#message").html());
 	$("#message").html("You bought " + $(".numPacks:checked").val() + " packs from the " + setNames[$(".sets:checked").val()] + " set.<br><br>");
 }
