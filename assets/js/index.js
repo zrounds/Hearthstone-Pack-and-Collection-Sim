@@ -1,6 +1,7 @@
 ﻿var cards = {};
 var collection = {};
 var moneySpent = 0.0;
+var uniqueCardCount = 0, duplicateCardCount = 0;
 var sets = ["EXPERT1", "GVG", "TGT", "OG"];
 var setsToSkip = ["CORE","HERO_SKINS", "PROMO", "REWARD"]; 
 var adventureSets = ["KARA", "LOE", "BRM", "NAXX"];
@@ -47,10 +48,13 @@ $(document).ready(function(){
 	});
 	$("#"+sets[0]).prop("checked", true);
 	for (var key in cards){
+		uniqueCardCount++;
+		duplicateCardCount += (cards[key]["rarity"] == "LEGENDARY") ? 1 : 2;
 		collection[key] = {};
 		collection[key]["normal"] = 0; 
 		collection[key]["golden"] = 0; 
 	};
+	$("#completion").html(" 0 / " + uniqueCardCount + " (0%), at least one of each card<br>0 / " + duplicateCardCount + " (0%), multiples included");
 });
 
 function buyPacks(){
@@ -216,8 +220,14 @@ function buyPacks(){
 	//Dump collection and show moneySpent
 	$("#moneySpent").html("$" + parseFloat(Math.round(moneySpent * 100) / 100).toFixed(2)); 
 	$("#collection").html("");
-	var totalDust = 0, extraDust = 0;
+	var totalDust = 0, extraDust = 0, uniqueCardOwned = 0, duplicateCardOwned = 0;
 	for (var key in collection) {
+		if (collection[key]["normal"] + collection[key]["golden"] > 0) uniqueCardOwned++;
+		if (cards[key]["rarity"] == "LEGENDARY"){
+			if (collection[key]["normal"] + collection[key]["golden"] > 0) duplicateCardOwned++;
+		} else {
+			duplicateCardOwned += (collection[key]["normal"] + collection[key]["golden"] > 2) ? 2 : collection[key]["normal"] + collection[key]["golden"]; 
+		}
 		if (collection[key]["normal"] > 0){ 
 			$("#collection").append(cards[key]["name"] + ": " + collection[key]["normal"] + "<br>");
 			switch(cards[key]["rarity"]){
@@ -262,7 +272,7 @@ function buyPacks(){
 		}
 	};
 	$("#dust").html("Total Dust: " + totalDust + "<br>Extra Dust: " + extraDust);
-	//$("completion").html(); --- Build the two different completion percentages after each buy, or rather smarter to update it 
+	$("#completion").html(" " + uniqueCardOwned + " / " + uniqueCardCount + " (" + parseFloat(uniqueCardOwned / uniqueCardCount * 100).toFixed(2) + "%), at least one of each card<br>" + duplicateCardOwned + " / " + duplicateCardCount + " (" + parseFloat(duplicateCardOwned / duplicateCardCount * 100).toFixed(2) + "%), multiples included");
 	$("#history").prepend($("#message").html());
 	$("#message").html("You bought " + $(".numPacks:checked").val() + " packs from the " + setNames[$(".sets:checked").val()] + " set.<br><br>");
 }
