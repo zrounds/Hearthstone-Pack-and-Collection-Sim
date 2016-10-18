@@ -48,8 +48,10 @@ $(document).ready(function(){
 	});
 	$("#"+sets[0]).prop("checked", true);
 	for (var key in cards){
-		uniqueCardCount++;
-		duplicateCardCount += (cards[key]["rarity"] == "LEGENDARY") ? 1 : 2;
+		if ($.inArray(cards[key]["set"], sets) >= 0){
+			uniqueCardCount++;
+			duplicateCardCount += (cards[key]["rarity"] == "LEGENDARY") ? 1 : 2;
+		}
 		collection[key] = {};
 		collection[key]["normal"] = 0; 
 		collection[key]["golden"] = 0; 
@@ -221,6 +223,12 @@ function buyPacks(){
 	$("#moneySpent").html("$" + parseFloat(Math.round(moneySpent * 100) / 100).toFixed(2)); 
 	$("#collection").html("");
 	var totalDust = 0, extraDust = 0, uniqueCardOwned = 0, duplicateCardOwned = 0;
+	/*
+	***   EVENTUALLY REWORK THE COLLECTION TO TABLE FORM ***
+	var dupCollection = clone(collection);
+	console.log(dupCollection);
+	***           JUST A BIT OF A PAIN FOR NOW           ***
+	*/
 	for (var key in collection) {
 		if (collection[key]["normal"] + collection[key]["golden"] > 0) uniqueCardOwned++;
 		if (cards[key]["rarity"] == "LEGENDARY"){
@@ -358,6 +366,40 @@ function getRandomArbitrary(min, max) {
 //Inclusive of min, exclusive of max
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
+}
+
+function clone(obj) {
+    var copy;
+
+    // Handle the 3 simple types, and null or undefined
+    if (null == obj || "object" != typeof obj) return obj;
+
+    // Handle Date
+    if (obj instanceof Date) {
+        copy = new Date();
+        copy.setTime(obj.getTime());
+        return copy;
+    }
+
+    // Handle Array
+    if (obj instanceof Array) {
+        copy = [];
+        for (var i = 0, len = obj.length; i < len; i++) {
+            copy[i] = clone(obj[i]);
+        }
+        return copy;
+    }
+
+    // Handle Object
+    if (obj instanceof Object) {
+        copy = {};
+        for (var attr in obj) {
+            if (obj.hasOwnProperty(attr)) copy[attr] = clone(obj[attr]);
+        }
+        return copy;
+    }
+
+    throw new Error("Unable to copy obj! Its type isn't supported.");
 }
 
 //Minimum from array -- No longer needed after reworking of pity timer distribution algorithm
