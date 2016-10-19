@@ -301,7 +301,7 @@ function buyPacks(){
 	while (i < commonList.length || i < rareList.length || i < epicList.length || i < legendaryList.length){
 		var buildString = "<tr>";
 		for (var x = 0; x < 4; x++){
-			buildString += (i < masterList[x].length) ? "<td> " + cards[masterList[x][i]]["name"] + " </td><td> " + collection[masterList[x][i]]["normal"] + " </td><td> " + collection[masterList[x][i]]["golden"] + " </td>" : "<td> - </td><td> - </td><td> - </td>";
+			buildString += (i < masterList[x].length) ? "<td id ='" + masterList[x][i] + "' class='showCard'>" + cards[masterList[x][i]]["name"] + " </td><td> " + collection[masterList[x][i]]["normal"] + " </td><td> " + collection[masterList[x][i]]["golden"] + " </td>" : "<td> - </td><td> - </td><td> - </td>";
 		};
 		buildString += "</tr>";
 		console.log(buildString)
