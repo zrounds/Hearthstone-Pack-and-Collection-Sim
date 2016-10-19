@@ -1,6 +1,15 @@
 .grey{
-color: gray; 
+	color: gray; 
 }
 .header{
 	font-weight: bold;
+}
+table{
+	text-align: center;
+	border:solid;
+	border-collapse: collapse;
+}
+td,th{
+	padding: 6px;
+	border: 1px solid;
 }

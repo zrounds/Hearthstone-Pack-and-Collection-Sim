@@ -221,7 +221,7 @@ function buyPacks(){
 	
 	//Dump collection and show moneySpent
 	$("#moneySpent").html("$" + parseFloat(Math.round(moneySpent * 100) / 100).toFixed(2)); 
-	$("#collection").html("");
+	//$("#collection").html("");
 	var totalDust = 0, extraDust = 0, uniqueCardOwned = 0, duplicateCardOwned = 0;
 	/*
 	***   EVENTUALLY REWORK THE COLLECTION TO TABLE FORM ***
@@ -229,15 +229,31 @@ function buyPacks(){
 	console.log(dupCollection);
 	***           JUST A BIT OF A PAIN FOR NOW           ***
 	*/
+	var commonList = [], rareList = [], epicList = [], legendaryList = [];
 	for (var key in collection) {
-		if (collection[key]["normal"] + collection[key]["golden"] > 0) uniqueCardOwned++;
+		if (collection[key]["normal"] + collection[key]["golden"] > 0) {
+			uniqueCardOwned++;
+			switch(cards[key]["rarity"]){
+				case "COMMON":
+					commonList.push(key);
+					break;
+				case "RARE":
+					rareList.push(key);
+					break;
+				case "EPIC":
+					epicList.push(key);
+					break;
+				case "LEGENDARY":
+					legendaryList.push(key);
+			}
+		}
 		if (cards[key]["rarity"] == "LEGENDARY"){
 			if (collection[key]["normal"] + collection[key]["golden"] > 0) duplicateCardOwned++;
 		} else {
 			duplicateCardOwned += (collection[key]["normal"] + collection[key]["golden"] > 2) ? 2 : collection[key]["normal"] + collection[key]["golden"]; 
 		}
 		if (collection[key]["normal"] > 0){ 
-			$("#collection").append(cards[key]["name"] + ": " + collection[key]["normal"] + "<br>");
+			//$("#collection").append(cards[key]["name"] + ": " + collection[key]["normal"] + "<br>");
 			switch(cards[key]["rarity"]){
 				case "COMMON":
 					totalDust += collection[key]["normal"] * 5;
@@ -258,7 +274,7 @@ function buyPacks(){
 			}
 		}
 		if (collection[key]["golden"] > 0) {
-			$("#collection").append(cards[key]["name"] + " (golden): " + collection[key]["golden"] + "<br>");
+			//$("#collection").append(cards[key]["name"] + " (golden): " + collection[key]["golden"] + "<br>");
 			switch(cards[key]["rarity"]){
 				case "COMMON":
 					totalDust += collection[key]["golden"] * 40;
@@ -279,6 +295,19 @@ function buyPacks(){
 			}
 		}
 	};
+	$("#collectionData").html("<tr><th>Common</th><th>(Normal)</th><th>(Golden)</th><th>Rare</th><th>(Normal)</th><th>(Golden)</th><th>Epic</th><th>(Normal)</th><th>(Golden)</th><th>Legendary</th><th>(Normal)</th><th>(Golden)</th></tr>");
+	var i = 0;
+	var masterList = [commonList,rareList,epicList,legendaryList];
+	while (i < commonList.length || i < rareList.length || i < epicList.length || i < legendaryList.length){
+		var buildString = "<tr>";
+		for (var x = 0; x < 4; x++){
+			buildString += (i < masterList[x].length) ? "<td> " + cards[masterList[x][i]]["name"] + " </td><td> " + collection[masterList[x][i]]["normal"] + " </td><td> " + collection[masterList[x][i]]["golden"] + " </td>" : "<td> - </td><td> - </td><td> - </td>";
+		};
+		buildString += "</tr>";
+		console.log(buildString)
+		$("#collectionData").append(buildString);
+		i++;
+	}
 	$("#dust").html("Total Dust: " + totalDust + "<br>Extra Dust: " + extraDust);
 	$("#completion").html(" " + uniqueCardOwned + " / " + uniqueCardCount + " (" + parseFloat(uniqueCardOwned / uniqueCardCount * 100).toFixed(2) + "%), at least one of each card<br>" + duplicateCardOwned + " / " + duplicateCardCount + " (" + parseFloat(duplicateCardOwned / duplicateCardCount * 100).toFixed(2) + "%), multiples included");
 	$("#history").prepend($("#message").html());
