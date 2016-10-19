@@ -2,14 +2,14 @@
 var collection = {};
 var moneySpent = 0.0;
 var uniqueCardCount = 0, duplicateCardCount = 0;
-var sets = ["EXPERT1", "GVG", "TGT", "OG"];
+var sets = ["Classic", "Goblins vs Gnomes", "The Grand Tournament", "Whispers of the Old Gods"];
 var setsToSkip = ["CORE","HERO_SKINS", "PROMO", "REWARD"]; 
 var adventureSets = ["KARA", "LOE", "BRM", "NAXX"];
-var setNames = {"EXPERT1":"Classic", 
+var setNames = {"Classic":"Classic", 
 				"CORE":"Basic", 
-				"GVG": "Goblins Versus Gnomes", 
-				"TGT":"The Grand Tournament",
-				"OG":"Whispers of the Old Gods",
+				"Goblins vs Gnomes": "Goblins Versus Gnomes", 
+				"The Grand Tournament":"The Grand Tournament",
+				"Whispers of the Old Gods":"Whispers of the Old Gods",
 				"LOE":"League of Explorers",
 				"BRM":"Black Rock Mountain",
 				"NAXX":"Curse of Naxxramus",
@@ -17,8 +17,8 @@ var setNames = {"EXPERT1":"Classic",
 //var cBound = 70.36, gcBound = 71.84, rBound = 93.44, grBound = 94.71, eBound = 98.79, geBound = 98.98, lBound = 99.92
 var cBound = 76.25, gcBound = 77.75, rBound = 94.75, grBound = 95.75, eBound = 99, geBound = 99.16, lBound = 99.925;
 var pityTimers = {
-	"epic":[0,10],
-	"legendary":[0,40],
+	"Epic":[0,10],
+	"Legendary":[0,40],
 	"goldenCommon":[0,25],
 	"goldenRare":[0,29],
 	"goldenEpic":[0,137],
@@ -27,15 +27,24 @@ var pityTimers = {
 $(document).ready(function(){
 	
 	$.ajax({
-        url: "https://api.hearthstonejson.com/v1/14406/enUS/cards.collectible.json",
+        /*url: "https://api.hearthstonejson.com/v1/14406/enUS/cards.collectible.json",*/
+		url:"https://omgvamp-hearthstone-v1.p.mashape.com/cards",
         type: "GET",
+		data: {"collectible":1},
+		datatype: 'json', 
 		async: false,
         success: function (data, xhr, status) {
 			//cards = data.slice();
 			$.each(data, function(i){
-				cards[data[i]["id"]] = data[i];
+				//cards[data[i]["cardId"]] = data[i];
+				$.each(data[i], function(x){
+					cards[data[i][x]["cardId"]] = data[i][x];
+				});
 			});
-        }
+        },
+		beforeSend: function(xhr){
+			xhr.setRequestHeader("X-Mashape-Authorization", "5QJ9DYKz92mshHkqF86rKGoZKBNbp1LabxqjsnEixvaoXrdSlF");
+		}
     });
 	//Defunct - I decided to hard-code the sets because the API does not put a distinction b/w adventures and expansions and I need the distinction 
 	/*$.each(cards, function(i) {
@@ -48,9 +57,9 @@ $(document).ready(function(){
 	});
 	$("#"+sets[0]).prop("checked", true);
 	for (var key in cards){
-		if ($.inArray(cards[key]["set"], sets) >= 0){
+		if ($.inArray(cards[key]["cardSet"], sets) >= 0){
 			uniqueCardCount++;
-			duplicateCardCount += (cards[key]["rarity"] == "LEGENDARY") ? 1 : 2;
+			duplicateCardCount += (cards[key]["rarity"] == "Legendary") ? 1 : 2;
 		}
 		collection[key] = {};
 		collection[key]["normal"] = 0; 
@@ -65,16 +74,16 @@ function buyPacks(){
 	for (var key in cards){
 		if (isCurrentlySelectedSet(cards[key])) {
 			switch(cards[key]["rarity"]){
-				case "COMMON":
+				case "Common":
 					commonCards.push(cards[key]);
 					break;
-				case "RARE":
+				case "Rare":
 					rareCards.push(cards[key]);
 					break;
-				case "EPIC":
+				case "Epic":
 					epicCards.push(cards[key]);
 					break;
-				case "LEGENDARY":
+				case "Legendary":
 					legendaryCards.push(cards[key]);
 					break;
 			}
@@ -131,13 +140,13 @@ function buyPacks(){
 	$.each(takingPity, function(i){
 		//var lowestRarity = minimumValueIndex(rarities);
 		switch(takingPity[i]){
-			case "epic":
+			case "Epic":
 				rarities.push(eBound);
-				pityTimers["epic"][0] = 0;
+				pityTimers["Epic"][0] = 0;
 				break;
-			case "legendary":
+			case "Legendary":
 				rarities.push(lBound);
-				pityTimers["legendary"][0] = 0;
+				pityTimers["Legendary"][0] = 0;
 				break;
 			case "goldenCommon":
 				rarities.push(gcBound)
@@ -172,44 +181,44 @@ function buyPacks(){
 	} 
 	
 	//Distribute random cards based on rarity
-	var raritiesOpened = {"epic":false,"legendary":false,"goldenCommon":false,"goldenRare":false,"goldenEpic":false,"goldenLegendary":false}; //To increment or zero pity timers
+	var raritiesOpened = {"Epic":false,"Legendary":false,"goldenCommon":false,"goldenRare":false,"goldenEpic":false,"goldenLegendary":false}; //To increment or zero pity timers
 		$.each(rarities, function(i){
 			if(rarities[i] <= cBound){
 				//Common
-				var chosenCard = commonCards[getRandomInt(0,commonCards.length)]["id"];
+				var chosenCard = commonCards[getRandomInt(0,commonCards.length)]["cardId"];
 				collection[chosenCard]["normal"] = collection[chosenCard]["normal"] + 1;
 			}else if (rarities[i] > cBound && rarities[i] <= gcBound){
 				//Golden Common
-				var chosenCard = commonCards[getRandomInt(0,commonCards.length)]["id"];
+				var chosenCard = commonCards[getRandomInt(0,commonCards.length)]["cardId"];
 				collection[chosenCard]["golden"] = collection[chosenCard]["golden"] + 1;
 				raritiesOpened["goldenCommon"] = true;
 			} else if (rarities[i] > gcBound && rarities[i] <= rBound){
 				//Rare
-				var chosenCard = rareCards[getRandomInt(0,rareCards.length)]["id"];
+				var chosenCard = rareCards[getRandomInt(0,rareCards.length)]["cardId"];
 				collection[chosenCard]["normal"] = collection[chosenCard]["normal"] + 1;
 			} else if (rarities[i] > rBound && rarities[i] <= grBound){
 				//Golden Rare
-				var chosenCard = rareCards[getRandomInt(0,rareCards.length)]["id"];
+				var chosenCard = rareCards[getRandomInt(0,rareCards.length)]["cardId"];
 				collection[chosenCard]["golden"] = collection[chosenCard]["golden"] + 1;
 				raritiesOpened["goldenRare"] = true;
 			} else if (rarities[i] > grBound && rarities[i] <= eBound){
 				//Epic
-				var chosenCard = epicCards[getRandomInt(0,epicCards.length)]["id"];
+				var chosenCard = epicCards[getRandomInt(0,epicCards.length)]["cardId"];
 				collection[chosenCard]["normal"] = collection[chosenCard]["normal"] + 1;
-				raritiesOpened["epic"] = true;
+				raritiesOpened["Epic"] = true;
 			} else if (rarities[i] > eBound && rarities[i] <= geBound){
 				//Golden Epic
-				var chosenCard = epicCards[getRandomInt(0,epicCards.length)]["id"];
+				var chosenCard = epicCards[getRandomInt(0,epicCards.length)]["cardId"];
 				collection[chosenCard]["golden"] = collection[chosenCard]["golden"] + 1;
 				raritiesOpened["goldenEpic"] = true;
 			} else if (rarities[i] > geBound && rarities[i] <= lBound){
 				//Legendary
-				var chosenCard = legendaryCards[getRandomInt(0,legendaryCards.length)]["id"];
+				var chosenCard = legendaryCards[getRandomInt(0,legendaryCards.length)]["cardId"];
 				collection[chosenCard]["normal"] = collection[chosenCard]["normal"] + 1;
-				raritiesOpened["legendary"] = true;
+				raritiesOpened["Legendary"] = true;
 			} else {
 				//Golden Legendary (>99.92 && <= 100, but no reason to actually test this)
-				var chosenCard = legendaryCards[getRandomInt(0,legendaryCards.length)]["id"];
+				var chosenCard = legendaryCards[getRandomInt(0,legendaryCards.length)]["cardId"];
 				collection[chosenCard]["golden"] = collection[chosenCard]["golden"] + 1;
 				raritiesOpened["goldenLegendary"] = true;
 			}
@@ -234,20 +243,20 @@ function buyPacks(){
 		if (collection[key]["normal"] + collection[key]["golden"] > 0) {
 			uniqueCardOwned++;
 			switch(cards[key]["rarity"]){
-				case "COMMON":
+				case "Common":
 					commonList.push(key);
 					break;
-				case "RARE":
+				case "Rare":
 					rareList.push(key);
 					break;
-				case "EPIC":
+				case "Epic":
 					epicList.push(key);
 					break;
-				case "LEGENDARY":
+				case "Legendary":
 					legendaryList.push(key);
 			}
 		}
-		if (cards[key]["rarity"] == "LEGENDARY"){
+		if (cards[key]["rarity"] == "Legendary"){
 			if (collection[key]["normal"] + collection[key]["golden"] > 0) duplicateCardOwned++;
 		} else {
 			duplicateCardOwned += (collection[key]["normal"] + collection[key]["golden"] > 2) ? 2 : collection[key]["normal"] + collection[key]["golden"]; 
@@ -255,19 +264,19 @@ function buyPacks(){
 		if (collection[key]["normal"] > 0){ 
 			//$("#collection").append(cards[key]["name"] + ": " + collection[key]["normal"] + "<br>");
 			switch(cards[key]["rarity"]){
-				case "COMMON":
+				case "Common":
 					totalDust += collection[key]["normal"] * 5;
 					if (collection[key]["normal"] > 2) extraDust += (collection[key]["normal"] - 2) * 5;
 					break;
-				case "RARE":
+				case "Rare":
 					totalDust += collection[key]["normal"] * 40;
 					if (collection[key]["normal"] > 2) extraDust += (collection[key]["normal"] - 2) * 40;
 					break;
-				case "EPIC":
+				case "Epic":
 					totalDust += collection[key]["normal"] * 100;
 					if (collection[key]["normal"] > 2) extraDust += (collection[key]["normal"] - 2) * 100;
 					break;
-				case "LEGENDARY":
+				case "Legendary":
 					totalDust += collection[key]["normal"] * 400;
 					extraDust += (collection[key]["normal"] - 1) * 400;
 					break;
@@ -276,19 +285,19 @@ function buyPacks(){
 		if (collection[key]["golden"] > 0) {
 			//$("#collection").append(cards[key]["name"] + " (golden): " + collection[key]["golden"] + "<br>");
 			switch(cards[key]["rarity"]){
-				case "COMMON":
+				case "Common":
 					totalDust += collection[key]["golden"] * 40;
 					if (collection[key]["golden"] > 2) extraDust += (collection[key]["golden"] - 2) * 40;
 					break;
-				case "RARE":
+				case "Rare":
 					totalDust += collection[key]["golden"] * 100;
 					if (collection[key]["golden"] > 2) extraDust += (collection[key]["golden"] - 2) * 100;
 					break;
-				case "EPIC":
+				case "Epic":
 					totalDust += collection[key]["golden"] * 400;
 					if (collection[key]["golden"] > 2) extraDust += (collection[key]["golden"] - 2) * 400;
 					break;
-				case "LEGENDARY":
+				case "Legendary":
 					totalDust += collection[key]["golden"] * 1600;
 					extraDust += (collection[key]["golden"] - 1) * 1600;
 					break;
@@ -301,10 +310,9 @@ function buyPacks(){
 	while (i < commonList.length || i < rareList.length || i < epicList.length || i < legendaryList.length){
 		var buildString = "<tr>";
 		for (var x = 0; x < 4; x++){
-			buildString += (i < masterList[x].length) ? "<td id ='" + masterList[x][i] + "' class='showCard'>" + cards[masterList[x][i]]["name"] + " </td><td> " + collection[masterList[x][i]]["normal"] + " </td><td> " + collection[masterList[x][i]]["golden"] + " </td>" : "<td> - </td><td> - </td><td> - </td>";
+			buildString += (i < masterList[x].length) ? "<td id ='" + masterList[x][i] + "' class='showCard'><img src='" + cards[masterList[x][i]]["img"] + "'/>" + cards[masterList[x][i]]["name"] + " </td><td> " + collection[masterList[x][i]]["normal"] + " </td><td> " + collection[masterList[x][i]]["golden"] + " </td>" : "<td> - </td><td> - </td><td> - </td>";
 		};
 		buildString += "</tr>";
-		console.log(buildString)
 		$("#collectionData").append(buildString);
 		i++;
 	}
@@ -324,19 +332,19 @@ function validationTest(){
 	var c = 0, r = 0, e = 0, l = 0, gc = 0, gr = 0, ge = 0, gl = 0, totalCards = 0;
 	for (var key in collection){
 		switch (cards[key]["rarity"]){
-			case "COMMON":
+			case "Common":
 				c += collection[key]["normal"];
 				gc += collection[key]["golden"];
 				break;
-			case "RARE":
+			case "Rare":
 				r += collection[key]["normal"];
 				gr += collection[key]["golden"];
 				break;
-			case "EPIC":
+			case "Epic":
 				e += collection[key]["normal"];
 				ge += collection[key]["golden"];
 				break;
-			case "LEGENDARY":
+			case "Legendary":
 				l += collection[key]["normal"];
 				gl += collection[key]["golden"];
 				break;
@@ -364,23 +372,23 @@ function validationTest(){
 }
 
 function isCurrentlySelectedSet(value,i){
-	return value["set"] == $(".sets:checked").val();
+	return value["cardSet"] == $(".sets:checked").val();
 }
 /*
 function isCommon(value){
-	return value["rarity"] == "COMMON";
+	return value["rarity"] == "Common";
 }
 
 function isRare(value){
-	return value["rarity"] == "RARE";
+	return value["rarity"] == "Rare";
 }
 
 function isEpic(value){
-	return value["rarity"] == "EPIC";
+	return value["rarity"] == "Epic";
 }
 
 function isLegendary(value){
-	return value["rarity"] == "LEGENDARY";
+	return value["rarity"] == "Legendary";
 }*/
 
 function isGreaterThanZero(value){
